@@ -10,9 +10,7 @@ const jsonParser = bodyParser.json();
 
 server.get("/api/status/all", (req, res) => {
     
-    if(serverCache.get("current"))
-    
-    serverCache.get("")
+
 });
 
 //Reverse Proxy
