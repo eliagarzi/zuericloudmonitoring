@@ -1,0 +1,29 @@
+{
+  "name": "zuericloudmonitoring",
+  "version": "1.0.0",
+  "description": "monitoring / website für die Züri Cloud AG im Modul 242",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eliagarzi/zuericloudmonitoring.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eliagarzi/zuericloudmonitoring/issues"
+  },
+  "homepage": "https://github.com/eliagarzi/zuericloudmonitoring#readme",
+  "dependencies": {
+    "body-parser": "^1.19.2",
+    "express": "^4.17.3",
+    "node-cache": "^5.1.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
