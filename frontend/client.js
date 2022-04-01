@@ -32,8 +32,13 @@ let services = {
 
 const apiErrorElement = document.querySelector(".api-error");
 
-function displayAPIError(error) {
-    apiErrorElement.childNodes[0].textContent = `Fehler mit API-Verbindung ${error}`;
+function displayAPIStatus(error) {
+    if (error) {
+        apiErrorElement.childNodes[0].textContent = `Fehler mit API-Verbindung ${error}`;
+    } else {
+        apiErrorElement.childNodes[0].textContent = `Ok`;
+    }
+    
 }
 
 async function getStatusInfo(url) {
@@ -52,7 +57,7 @@ async function getStatusInfo(url) {
             return response;
         }
     } catch (error) {
-        displayAPIError(error)
+        displayAPIStatus(error)
         console.error(error);
     }
 }
@@ -88,12 +93,14 @@ function renderStatusInfo(statusData) {
     }
 }
 
-const body = document.querySelector("body");
+const main = document.querySelector("main");
 
 function renderDOMHTML(serviceidentifier, headertext, services) {
     
     let serviceStatusDOMElement = document.createElement("div");
-    serviceStatusDOMElement.classList.add(`service-status__element service-status__element--${serviceidentifier}`);
+    let serviceidentifierclass = `service-status__element--${serviceidentifier}`
+    serviceStatusDOMElement.classList.add(`service-status__element`);
+    serviceStatusDOMElement.classList.add(serviceidentifierclass);
 
     let serviceStatusDOMElementHeader = document.createElement("div");
     serviceStatusDOMElementHeader.classList.add("service-status__element--header");
@@ -121,12 +128,11 @@ function renderDOMHTML(serviceidentifier, headertext, services) {
     serviceStatusDOMElement.appendChild(serviceStatusDOMElementHeader);
     serviceStatusDOMElement.appendChild(serviceStatusDOMElementBody);
 
-    body.appendChild(serviceStatusDOMElement);
+    main.appendChild(serviceStatusDOMElement);
 }
 
 //Sobald das Dokument geladen ist, wird der Server nach Informationen angefragt
-document.addEventListener("load", () => {
-
+window.addEventListener("load", () => {
     //Die Seite wird dynamisch nach dem "services" Objekt generiert
     for(element in services) {
         renderDOMHTML(services[element].identifier ,services[element].name, services[element].services);

@@ -10,3 +10,5 @@ Für das Modul habe ich eine kleine Website programmiert. Diese ist sowohl die S
 
 ## Aufbau
 
+API: (link), als Serverless Container auf der Google Cloud.
+Frontend: (link), wird per NGINX an die Clients ausgeliefert.
