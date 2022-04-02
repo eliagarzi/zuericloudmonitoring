@@ -11,25 +11,13 @@
     <body>
 
         <h1 class="title">Züri Cloud AG Service Status</h1>
-
-        <div class="api-error">
-            <h3>API-Status:</h3>
+        
+        <div class="api-status">
+            <span>Status:  </span><span class="api-status__status"></span></br>
+            <span>Last Fetch:  </span><span class="api-status__lastfetch"></span>
         </div>
 
         <main>
-            <div class="service-status__element">
-                <div class="service-status__element--header">
-                    <h2 class="service-status__element--header-text">Nextcloud</h2>
-                </div>
-                <div class="service-status__element--body">
-                    <table class="service-status__element--body-table">
-                        <tr>
-                            <td>MySql:</td>
-                            <td>Online</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
             
         </main>
         <script src="./client.js" async defer></script>

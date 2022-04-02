@@ -1,5 +1,5 @@
 //Url für die API
-let statusAPIURL = "http://127.0.0.1/api/status/all";
+let statusAPIURL = "http://127.0.0.1:3000/api/status/all";
 
 //Mit diesem Objekt können die Services bestimmt werden, die dargestellt werden
 let services = {
@@ -30,15 +30,14 @@ let services = {
     }
 }
 
-const apiErrorElement = document.querySelector(".api-error");
+const apiStatusElementStatus = document.querySelector(".api-status__status");
 
-function displayAPIStatus(error) {
-    if (error) {
-        apiErrorElement.childNodes[0].textContent = `Fehler mit API-Verbindung ${error}`;
+function displayAPIStatus(error, ok) {
+    if (error && ok == undefined)  {
+        apiStatusElementStatus.textContent = ` Fehler mit API-Verbindung ${error}`;
     } else {
-        apiErrorElement.childNodes[0].textContent = `Ok`;
+        apiStatusElementStatus.textContent = ` HTTP ${ok}`;
     }
-    
 }
 
 async function getStatusInfo(url) {
@@ -54,25 +53,25 @@ async function getStatusInfo(url) {
         if (!response.ok) {
             throw new Error
         } else {
+            displayAPIStatus(undefined, response.status)
             return response;
         }
     } catch (error) {
-        displayAPIStatus(error)
+        displayAPIStatus(error, undefined)
         console.error(error);
     }
 }
 
 //Diese Funktionen stellt die JSON Daten im HTML dar. 
 function renderStatusInfo(statusData) {
-
     //So sollen die übermittelnden JSON Daten strukturiert sein
     // let statusData = {
     //     identifier: nextcloud,
     //     services: {
-    //         "Nextcloud": true,
-    //         "MySql": true,
-    //         "Apache2": true,
-    //         "PHP": true
+    //         "Nextcloud": 1,
+    //         "MySql": 1,
+    //         "Apache2": 1,
+    //         "PHP": 1
     //     }
     // }
 
@@ -80,14 +79,40 @@ function renderStatusInfo(statusData) {
 
     for(let i = 0; i < allServiceStatusElements.length; i++) {
         if (allServiceStatusElements[i].classList.contains(`service-status__element--${statusData.identifier}`)) {
-            statusData.services.forEach(element => {
+
+            //Alte Table wird gelöscht
+            const statusElementBody = document.querySelector(`.service-status__element--body--${statusData.identifier}`);
+            const statusElementBodyTable = document.querySelector(`.service-status__element--body-table--${statusData.identifier}`);
+
+            statusElementBody.removeChild(statusElementBodyTable);
+
+            let serviceStatusDOMElementBodyTable = document.createElement("table");
+            serviceStatusDOMElementBodyTable.classList.add("service-status__element--body-table");
+            serviceStatusDOMElementBodyTable.classList.add(`service-status__element--body-table--${statusData.identifier}`);
+
+            for(element in statusData.services) {
                 let newTableRow = document.createElement("tr");
-                let newTableData = document.createElement("td");
-                newTableData.textContent = statusData.services[element];
-                newTableRow.appendChild(newTableData);
-                const elementStatusTable = document.querySelector(`service-status__element--body-table--${statusData.identifier}`);
-                elementStatusTable.appendChild(newTableRow);
-            })
+                let newTableDataName = document.createElement("td");
+                let newTableDataValue = document.createElement("td");
+
+                newTableDataName.textContent = element;
+                
+        
+                if(statusData.services[element] === 1) {
+                    newTableDataValue.textContent = "Online";
+                    newTableDataValue.classList.add("online");
+                } else {
+                    newTableDataValue.textContent = "Offline";
+                    newTableDataValue.classList.add("offline");
+                }
+
+                newTableRow.appendChild(newTableDataName);
+                newTableRow.appendChild(newTableDataValue);
+
+                serviceStatusDOMElementBodyTable.appendChild(newTableRow)
+            }
+
+            statusElementBody.appendChild(serviceStatusDOMElementBodyTable);
            break
         }
     }
@@ -98,30 +123,34 @@ const main = document.querySelector("main");
 function renderDOMHTML(serviceidentifier, headertext, services) {
     
     let serviceStatusDOMElement = document.createElement("div");
-    let serviceidentifierclass = `service-status__element--${serviceidentifier}`
     serviceStatusDOMElement.classList.add(`service-status__element`);
-    serviceStatusDOMElement.classList.add(serviceidentifierclass);
+    serviceStatusDOMElement.classList.add(`service-status__element--${serviceidentifier}`);
 
     let serviceStatusDOMElementHeader = document.createElement("div");
     serviceStatusDOMElementHeader.classList.add("service-status__element--header");
     
-    let serviceStatusDOMElementHeaderH = document.createComment("H2");
+    let serviceStatusDOMElementHeaderH = document.createElement("h2");
     serviceStatusDOMElementHeaderH.classList.add("service-status__element--header-text");
     serviceStatusDOMElementHeaderH.textContent = headertext;
     serviceStatusDOMElementHeader.appendChild(serviceStatusDOMElementHeaderH);
 
     let serviceStatusDOMElementBody = document.createElement("div");
-    serviceStatusDOMElementBody.classList.add("service-status__element--body");
+    serviceStatusDOMElementBody.classList.add(`service-status__element--body--${serviceidentifier}`);
     let serviceStatusDOMElementBodyTable = document.createElement("table");
-    serviceStatusDOMElementBodyTable.classList.add(`service-status__element--body-table service-status__element--body-table--${serviceidentifier}`);
+    serviceStatusDOMElementBodyTable.classList.add("service-status__element--body-table");
+    serviceStatusDOMElementBodyTable.classList.add(`service-status__element--body-table--${serviceidentifier}`);
     serviceStatusDOMElementBody.appendChild(serviceStatusDOMElementBodyTable);
 
     //Generiert Tabelle beim laden der Website
     services.forEach(element => {
         let newTableRow = document.createElement("tr");
-        let newTableData = document.createElement("td");
-        newTableData.textContent = services[element];
-        newTableRow.appendChild(newTableData);
+        let nameTableData = document.createElement("td");
+        let statusTableData = document.createElement("td");
+        statusTableData.classList.add("table-service-status");
+        nameTableData.textContent = element;
+        statusTableData.textContent = "not fetched";
+        newTableRow .appendChild(nameTableData);
+        newTableRow .appendChild(statusTableData);
         serviceStatusDOMElementBodyTable.appendChild(newTableRow);
     })
     
@@ -132,6 +161,8 @@ function renderDOMHTML(serviceidentifier, headertext, services) {
 }
 
 //Sobald das Dokument geladen ist, wird der Server nach Informationen angefragt
+const apiStatusLastFetch = document.querySelector(".api-status__lastfetch");
+
 window.addEventListener("load", () => {
     //Die Seite wird dynamisch nach dem "services" Objekt generiert
     for(element in services) {
@@ -139,12 +170,22 @@ window.addEventListener("load", () => {
     }
 
     let interval = setInterval(() => {
-        getStatusInfo() //Asynchrone Funktion gibt einen JavaScript Promise zurück
-        .then((response) => response.json()) //Wandelt den Body des HTTP Response in lesbarers JavaScript Objekt um
+        getStatusInfo(statusAPIURL) //Asynchrone Funktion gibt einen JavaScript Promise zurück
+        .then((response) => response.json()) //Wenn der Promise status "resolved" hat, wird der Body des HTTP Response in lesbarers JavaScript Objekt umgewandelt
         .then((data) => {
-            renderStatusInfo(data)
-            console.log("GET Data from Server")
-        }); //Gibt die Informationen weiter an das Frontend
+
+            for(element in data) {
+                renderStatusInfo(data[element]);
+            }
+
+            //renderStatusInfo(data)
+            let date = new Date()
+            var time = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+            apiStatusLastFetch.textContent = time; //Gibt die Informationen weiter an das Frontend
+        })
+        .catch((error) => {
+            console.error(error)
+        }); 
     }, 5000);
 
 });
