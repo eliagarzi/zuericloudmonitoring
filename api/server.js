@@ -1,57 +1,103 @@
 const express = require("express");
-const bodyParser = require("body-parser");
+const https = require("https");
+const fs = require("fs");
+const cors = require("cors");
 const nodeCache = require("node-cache");
 
 const server = new express();
 const port = 3000;
 
+const PROD = false;
+
 const serverCache = new nodeCache();
 
-const jsonParser = bodyParser.json();
+server.use(express.json())    
+
+server.use(cors({
+    origin: 'http://frontendweb.com'
+  }));
+
+//Speichert die Schlüssel die als Query Parameter mitgegeben werden, genutzt zur authentisierung.
+let apiKeyBase = [
+    "84da98d5-5e2b-4e62-a6fc-195eca0eb16d",
+    "b4cd1279-6e99-440a-be5d-b24085dd4cf1",
+    "508262b7-c962-41f5-9aca-85a41e45f930",
+]
+
+let services = [
+    "nextcloud",
+    "reverseproxy",
+    "mailserver"
+]
+
+let mailserver =  {
+    identifier: "mailserver",
+    services: {
+        "SMTP": 1,
+        "IMAP": 0,
+    }
+}
+
+let nextcloud =  {
+    identifier: "nextcloud",
+    services: {
+        "SMTP": 1,
+        "IMAP": 0,
+    }
+}
+
+serverCache.set("nextcloud", nextcloud)
+serverCache.set("mailserver", mailserver)
 
 server.get("/api/status/all", (req, res) => {
-    const data = {
-        nextcloud: {
-            identifier: "nextcloud",
-            name: "Nextcloud",
-            services: {
-                "Nextcloud": 0,
-                "MySql": 0,
-                "Apache2": 0,
-                "PHP": 1
-            }    
-        },
-        reverseproxy: {
-            identifier: "reverseproxy",
-            name: "NGINX Reverse Proxy",
-            services: {
-                "nginx": 0,
-            }
-        },
-        mailserver: {
-            identifier: "mailserver",
-            name: "Postfix Mailserver",
-            services: {
-                "SMTP": 1,
-                "IMAP": 0,
-            }
-        }
-    }
 
-    res.json(data);
+    if(req.query.apikey != undefined) {
+        if(apiKeyBase.includes(req.query.apikey)) {
+                const send = []
+                for(element in services) {
+                    send.push(serverCache.get(services[element]))
+                }   
+                res.json(send);
+        } else {
+            res.sendStatus(404)
+        }
+    } else {
+        res.sendStatus(404)
+    }
 });
 
-server.post("/api/status/", jsonParser,(req, res) => {
-    let sender = req.body.sender;
-    let status = req.body.status;
+server.post("/api/status/", (req, res) => {
+    if(req.query.apikey != undefined) {
+        if(apiKeyBase.includes(req.query.apikey)) {
+            if(req.body != undefined && req.body != null) {
 
-    serverCache.set(sender,status);
+
+                serverCache.set(data.identifier, data);
+                console.log(serverCache.get(data.identifier));
+                res.sendStatus(200)
+            } else {
+                res.sendStatus(404)
+            }
+        } else {
+            res.sendStatus(404)
+        }
+    } else {
+        res.sendStatus(404)
+    }
 });
 
 server.listen(port, (error) => {
-    if(error) {
-        console.error(error)
-    } else {
-        console.log(`Node.js Server gestartet auf Port: ${port}`)
-    }
-})
+        if(error) {
+            console.error(error)
+        } else {
+            console.log(`Node.js Server gestartet auf Port: ${port}`)
+        }
+    })
+
+// https.createServer(server).listen(port, (error) => {
+//         if(error) {
+//             console.error(error)
+//         } else {
+//             console.log(`Node.js Server gestartet auf Port: ${port}`)
+//         }
+//     })

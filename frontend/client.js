@@ -1,5 +1,5 @@
 //Url für die API
-let statusAPIURL = "http://127.0.0.1:3000/api/status/all";
+let statusAPIURL = "http://127.0.0.1:3000/api/status/all?apikey=508262b7-c962-41f5-9aca-85a41e45f930";
 
 //Mit diesem Objekt können die Services bestimmt werden, die dargestellt werden
 let services = {
