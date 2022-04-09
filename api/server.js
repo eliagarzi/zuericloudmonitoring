@@ -9,13 +9,15 @@ const port = 3000;
 
 const PROD = false;
 
+//Die Daten die Empfangen werden, werden in einem non-persistent Cache gespeichert. Dieser wird also automatisch gelöscht, wenn der Server beendet wird.
 const serverCache = new nodeCache();
 
+//Express Middleware, die den Body des Request Objekt lesbar macht
 server.use(express.json())    
 
 server.use(cors({
     origin: 'http://frontendweb.com'
-  }));
+}));
 
 //Speichert die Schlüssel die als Query Parameter mitgegeben werden, genutzt zur authentisierung.
 let apiKeyBase = [
@@ -30,54 +32,56 @@ let services = [
     "mailserver"
 ]
 
-let mailserver =  {
-    identifier: "mailserver",
-    services: {
-        "SMTP": 1,
-        "IMAP": 0,
-    }
-}
-
-let nextcloud =  {
-    identifier: "nextcloud",
-    services: {
-        "SMTP": 1,
-        "IMAP": 0,
-    }
-}
-
-serverCache.set("nextcloud", nextcloud)
-serverCache.set("mailserver", mailserver)
-
-server.get("/api/status/all", (req, res) => {
-
+//Middlewarefunktion die schaut, ob im Querystring ein gültiger Apikey mitgegeben wurde
+//Next() gibt den Event an die nächste Middleware Funktion weiter 
+function auth(req, res, next) {
     if(req.query.apikey != undefined) {
         if(apiKeyBase.includes(req.query.apikey)) {
-                const send = []
-                for(element in services) {
-                    send.push(serverCache.get(services[element]))
-                }   
-                res.json(send);
+            next();
         } else {
-            res.sendStatus(404)
-        }
+            res.sendStatus(403);
+        } 
     } else {
-        res.sendStatus(404)
+        res.sendStatus(400);
+    }
+}
+
+//Middlewarefunktion, die testet, ob der Body leer ist
+//Next() gibt den Event an die nächste Middleware Funktion weiter 
+function checkBody(req, res, next) {
+    if(req.body != undefined && req.body != {}) {
+        next();
+    } else {
+        res.sendStatus(404);
+    }
+}
+
+server.post("/api/status", auth, checkBody, (req, res) => {
+    if(services.includes(req.body.identifier)) {
+        serverCache.set(req.body.identifier, req.body)
+        res.sendStatus(200)
+    } else {
+        res.sendStatus(501);
     }
 });
 
-server.post("/api/status/", (req, res) => {
-    if(req.query.apikey != undefined) {
-        if(apiKeyBase.includes(req.query.apikey)) {
-            if(req.body != undefined && req.body != null) {
+server.get("/api/status/all", auth, checkBody, (req, res) => {
+    const send = []
+    for(element in services) {
+        if(serverCache.get(services[element]) != undefined) {
+            send.push(serverCache.get(services[element]))
+        } else {
+            send.push({"Service": "No Data"})
+        }
+    }   
+    res.json(send);
+});
 
-
-                serverCache.set(data.identifier, data);
-                console.log(serverCache.get(data.identifier));
-                res.sendStatus(200)
-            } else {
-                res.sendStatus(404)
-            }
+server.get("/api/status/:identifier", auth, (req, res) => {
+    let identifier = req.params.identifier;
+    if(services.includes(identifier)) {
+        if (serverCache.get(identifier) != undefined) {
+            res.json(serverCache.get(identifier))
         } else {
             res.sendStatus(404)
         }
@@ -87,12 +91,12 @@ server.post("/api/status/", (req, res) => {
 });
 
 server.listen(port, (error) => {
-        if(error) {
-            console.error(error)
-        } else {
-            console.log(`Node.js Server gestartet auf Port: ${port}`)
-        }
-    })
+    if(error) {
+        console.error(error)
+    } else {
+        console.log(`Node.js Server gestartet auf Port: ${port}`) 
+    }
+})
 
 // https.createServer(server).listen(port, (error) => {
 //         if(error) {
@@ -100,4 +104,4 @@ server.listen(port, (error) => {
 //         } else {
 //             console.log(`Node.js Server gestartet auf Port: ${port}`)
 //         }
-//     })
+//})

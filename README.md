@@ -16,7 +16,15 @@ Für das Modul habe ich eine kleine Website programmiert. Diese ist sowohl die S
 
 - Die API und das Frontend nutzen HTTPS
 
-## Aufbau
+## Aufbau & Arbeiten mit der API
 
 API: (link), als Serverless Container auf Google Cloud.
-Frontend: (link), wird per NGINX an die Clients ausgeliefert.
+Frontend: (link), wird per Nginx an die Clients ausgeliefert.
+
+Authentifizierung: ?apikey=key
+
+Alle Services abrufen: /api/status/all
+
+Bestimmten Service abrufen: /api/status/SERVICENAME
+
+Daten senden: /api/status
