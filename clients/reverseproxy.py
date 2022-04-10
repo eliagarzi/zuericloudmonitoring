@@ -3,22 +3,22 @@ import os
 import requests
 import time
 
-url = "http://127.0.0.1:3000/api/status?apikey=508262b7-c962-41f5-9aca-85a41e45f930"
-services = ["nextcloud", "mysql", "apache"] #Name der exakten Services
+url = "http://zuericloud.ddns.net/api/status?apikey=508262b7-c962-41f5-9aca-85a41e45f930"
+services = ["firewalld", "nginx", "wg-quick@wg0"] #Name der exakten Services
 
 jsonFull = {
-    "identifier": "nextcloud",
+    "identifier": "reverseproxy",
 }
 
 while True:
     json = {}
 
     for x in services:
-        status = 1 #os.system("systemctl is-active --quiet" + x)
+        status = os.system("systemctl is-active --quiet " + x)
         if status == 0:
-            json[x] = 0
+            json[x] = 1
         else:
-            json[x] = 1   
+            json[x] = 0   
 
     jsonFull["services"] = json
     

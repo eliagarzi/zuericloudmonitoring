@@ -24,3 +24,11 @@ Alle Services abrufen: /api/status/all
 Bestimmten Service abrufen: /api/status/SERVICENAME
 
 Daten senden: /api/status
+
+## Testing
+
+| Szenario                                                                        | Erwartet                 | Testergebnis             | Ok |
+|---------------------------------------------------------------------------------|--------------------------|--------------------------|----|
+| GET mit keinem oder falschem Querystring API Key                                | 403 Forbidden            | 403 Forbidden            | Ok |
+| POST mit keinem oder falschem Querystring API Key                               | 403 Forbidden            | 403 Forbidden            | Ok |
+| POST mit leerem Body                                                            | 404 Not Found            | 404 Not Found            | Ok |
