@@ -14,7 +14,7 @@ while True:
     json = {}
 
     for x in services:
-        status = os.system("systemctl is-active --quiet" + x)
+        status = 1 #os.system("systemctl is-active --quiet" + x)
         if status == 0:
             json[x] = 0
         else:

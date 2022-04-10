@@ -1,11 +1,9 @@
 const express = require("express");
-const https = require("https");
-const fs = require("fs");
 const cors = require("cors");
 const nodeCache = require("node-cache");
 
 const server = new express();
-const port = 3000;
+const port = process.env.PORT || 8080;
 
 const PROD = false;
 
@@ -13,11 +11,15 @@ const PROD = false;
 const serverCache = new nodeCache();
 
 //Express Middleware, die den Body des Request Objekt lesbar macht
-server.use(express.json())    
+server.use(express.json(
+    {
+        origin: "*",
+        methods: "POST, GET"
+    }
+))    
 
-server.use(cors({
-    origin: 'http://frontendweb.com'
-}));
+
+server.use(cors());
 
 //Speichert die Schlüssel die als Query Parameter mitgegeben werden, genutzt zur authentisierung.
 let apiKeyBase = [
@@ -89,6 +91,11 @@ server.get("/api/status/:identifier", auth, (req, res) => {
         res.sendStatus(404)
     }
 });
+
+server.post("/api/test", auth, (req, res) => {
+    console.log(req.body);
+    res.sendStatus(200)
+})
 
 server.listen(port, (error) => {
     if(error) {
