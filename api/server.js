@@ -2,13 +2,21 @@ const express = require("express");
 const cors = require("cors");
 const nodeCache = require("node-cache");
 
+const socket = require("socket.io")(3000, {
+    cors: {
+        origin: ["http://127.0.0.1:5500"],
+    } 
+})
+
 const server = new express();
 const port = process.env.PORT || 8080;
 
-const PROD = false;
-
 //Die Daten die Empfangen werden, werden in einem non-persistent Cache gespeichert. Dieser wird also automatisch gelöscht, wenn der Server beendet wird.
 const serverCache = new nodeCache();
+
+
+
+
 
 //Express Middleware, die den Body des Request Objekt lesbar macht
 server.use(express.json(
@@ -17,7 +25,6 @@ server.use(express.json(
         methods: "POST, GET"
     }
 ))    
-
 
 server.use(cors());
 
