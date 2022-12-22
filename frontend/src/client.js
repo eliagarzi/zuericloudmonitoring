@@ -1,4 +1,5 @@
-const websocket = io("http://localhost:3000")
+
+
 
 //Url für die API
 let statusAPIURL = "http://zuericloud.ddns.net/api/status/all?apikey=508262b7-c962-41f5-9aca-85a41e45f930";
@@ -40,6 +41,14 @@ let services = {
 }
 
 const apiStatusElementStatus = document.querySelector(".api-status__status");
+
+io.on("connection", () => {
+    socketio.on("service-status-update", (message) => {
+        console.log(message)
+    })
+});
+
+
 
 function displayAPIStatus(error, ok) {
     if (error && ok == undefined)  {

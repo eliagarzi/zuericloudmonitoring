@@ -2,31 +2,21 @@ const express = require("express");
 const cors = require("cors");
 const nodeCache = require("node-cache");
 
-const socket = require("socket.io")(3000, {
-    cors: {
-        origin: ["http://127.0.0.1:5500"],
-    } 
-})
-
 const server = new express();
 const port = process.env.PORT || 8080;
+const http = require("http").Server(server)
+
+
+server.use(cors({
+        origin: [process.env.CORS_SOURCE]
+    })
+)
 
 //Die Daten die Empfangen werden, werden in einem non-persistent Cache gespeichert. Dieser wird also automatisch gelöscht, wenn der Server beendet wird.
 const serverCache = new nodeCache();
 
-
-
-
-
 //Express Middleware, die den Body des Request Objekt lesbar macht
-server.use(express.json(
-    {
-        origin: "*",
-        methods: "POST, GET"
-    }
-))    
-
-server.use(cors());
+server.use(express.json())    
 
 //Speichert die Schlüssel die als Query Parameter mitgegeben werden, genutzt zur authentisierung.
 let apiKeyBase = [
@@ -65,6 +55,7 @@ function checkBody(req, res, next) {
     }
 }
 
+//Speichert den aktuellen Status der von einem Monitoring Agent gesendet wurde
 server.post("/api/status", auth, checkBody, (req, res) => {
     if(services.includes(req.body.identifier)) {
         serverCache.set(req.body.identifier, req.body)
@@ -74,6 +65,7 @@ server.post("/api/status", auth, checkBody, (req, res) => {
     }
 });
 
+//Zum abrufen des aktuellen Status von allen Diensten
 server.get("/api/status/all", auth, checkBody, (req, res) => {
     const send = []
     for(element in services) {
@@ -86,6 +78,7 @@ server.get("/api/status/all", auth, checkBody, (req, res) => {
     res.json(send);
 });
 
+//Zum abrufen eines spezifischen Status
 server.get("/api/status/:identifier", auth, (req, res) => {
     let identifier = req.params.identifier;
     if(services.includes(identifier)) {
@@ -99,23 +92,17 @@ server.get("/api/status/:identifier", auth, (req, res) => {
     }
 });
 
+//Zum testen, ob der API Server erreichbar ist
 server.post("/api/test", auth, (req, res) => {
     console.log(req.body);
     res.sendStatus(200)
 })
 
-server.listen(port, (error) => {
+//Stellt den Node.js Server auf dem definierten Port bereit
+http.listen(port, (error) => {
     if(error) {
         console.error(error)
     } else {
         console.log(`Node.js Server gestartet auf Port: ${port}`) 
     }
 })
-
-// https.createServer(server).listen(port, (error) => {
-//         if(error) {
-//             console.error(error)
-//         } else {
-//             console.log(`Node.js Server gestartet auf Port: ${port}`)
-//         }
-//})

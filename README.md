@@ -1,16 +1,26 @@
 # Monitoring Dashboard für das Modul 239
 
-Monitoring API zum abrufen des Status der verschiedenen Services der Züri Cloud AG.
+Monitoring API zum abrufen des Status der verschiedenen Services der Züricloud AG.
+
+## Architektur
+
+![](./Images/architektur.png)
 
 ## Technologien
+
+**Backend:**
 
 - Node.js (Runtime für Serverseitige Ausführung von JavaScript)
 - JavaScript
 - Express.js (Backend-Framework für JavaScript)
 
-## Sicherheit
+**Frontend:**
 
-- Um die Clients zu authentisieren, werden einfache API-Keys, die per Querystring mitgegeben werden, genutzt
+- JavaScript
+
+**API-Clients**
+
+- Python3
 
 ## Aufbau & Arbeiten mit der API
 

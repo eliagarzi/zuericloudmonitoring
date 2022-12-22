@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Zueri Cloud Status</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="./src/styles.css">
+        <script src="https://cdn.socket.io/4.4.1/socket.io.min.js" integrity="sha384-fKnu0iswBIqkjxrhQCTZ7qlLHOFEgNkRmK2vaO/LbTZSXdJfAu6ewRBdwHPhBo/H" crossorigin="anonymous"></script>
+        <script src="./src/client.js" async defer></script>
+    </head>
+    <body>
+        <header>
+            <h1 class="title">Züri Cloud AG Service Status</h1>
+        </header>
+
+        <div class="overview">
+            <div class="status-img-big"></div> <!--Green Circle-->
+        </div>
+
+        <div class="applications">
+            <!--Render Applications-->
+            <!--application-row-selected to change appearance, so user knows which application status is showed in detail-->
+            <div class="application-row application-row-selected"> 
+                <div class="applications__info">
+                    <h2 class="applications__info-name h2-general">Nextcloud</h2>
+                    <span class="applications__info-status">Operational</span>
+                </div>
+                <div class="applications__icon">
+                    <div class="status-img-small"><div>
+                </div>
+            </div>
+            <div>
+                <div class="applications__info"> 
+                    <h2 class="applications__info-name h2-general">Webmail</h2>
+                    <span class="applications__info-status">Operational</span>
+                </div>
+                <div class="applications__icon">
+                    <div class="status-img-small"></div>  <!--Green Circle-->
+                </div>
+            </div>
+            <div>
+                <div class="applications__info">
+                    <h2 class="applications__info-name h2-general">Startpage</h2>
+                    <span class="applications__info-status">Operational</span>
+                </div>
+                <div class="applications__icon">
+                    <div class="status-img-small"></div>  <!--Green Circle-->
+                </div>
+            </div>
+        </div>
+         
+        <div class="selected-application-buttons">
+            <button class="button-general button-time" type="button">1 month</button>
+            <button class="button-general button-time" type="button">1 week</button>
+            <button class="button-general button-time" type="button">24 hours</button>
+            <button class="button-general button-time" type="button">1 hours</button>
+            <button class="button-general button-time" type="button">realtime</button>
+        </div>
+
+        <div class="selected-application">
+            <div class="selected-application__uptime">
+                <!-- Graph mit Strichen -->
+            </div>
+            <div class="selected-application__response-time">
+                <!-- Graph mit Zeitverlauf -->
+            </div>
+        </div>
+
+    </body>
+</html>

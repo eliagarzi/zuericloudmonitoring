@@ -1,0 +1,107 @@
+$color-green: #6dde67;
+$color-gray: #a8a8a8c1; 
+
+* {
+    box-sizing: border-box;
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    margin: 2rem;
+    display: grid;
+
+    grid-template-columns: 20% 60% 20%;
+    grid-template-rows: 8% 10% 40% 4% 50%; 
+}
+
+
+header {
+    grid-column: 2;
+    grid-row: 1;
+
+    h1 {
+        font-size: 46px;
+        font-family: 'Roboto', sans-serif;
+        font-weight: 700;
+    }
+}
+
+.overview {
+    grid-column: 2;
+    grid-row: 2;
+
+    border: 1px solid $color-gray;
+    border-radius: 4px;
+}
+
+.applications {
+    grid-column: 2;
+    grid-row: 3;
+
+    border: 1px solid $color-gray;
+    border-radius: 4px;
+}
+
+.selected-application-buttons {
+    grid-column: 2;
+    grid-row: 4;
+}
+
+.selected-application {
+    grid-column: 2;
+    grid-row: 5;
+}
+
+.status-img-big {
+    background-color: $color-green;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+}
+
+.status-img-small {
+    background-color: $color-green;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+}
+
+.h2-general {
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+}
+
+.button-general {
+    background: none;
+    outline: none;
+    border: none;
+
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: rgb(52, 52, 52); 
+}
+
+.button-time {
+    border-radius: 5px;
+    height: 24px;
+    width: 75px;
+    
+    &:hover {
+        background-color: #a8a8a882; 
+        cursor: pointer;
+    }
+
+    &:active {
+        background-color: $color-gray;
+    }
+}
+
+.applications__info-status {
+    font-family: 'Roboto', sans-serif;
+    font-size: 20px;
+    color: $color-green;
+    font-weight: 500;
+}
